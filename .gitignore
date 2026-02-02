@@ -1,0 +1,46 @@
+# Python
+__pycache__/
+*.py[cod]
+*$py.class
+*.so
+.Python
+env/
+venv/
+ENV/
+.venv
+
+# Outputs
+outputs/
+*.csv
+jersey_log.csv
+
+# IDE
+.idea/
+.vscode/
+*.swp
+*.swo
+*~
+
+# Jupyter
+.ipynb_checkpoints/
+*.ipynb
+
+# Modelos y cache
+*.pt
+*.pth
+*.onnx
+.inference/
+cache/
+
+# Gradio
+gradio_cached_examples/
+flagged/
+
+# Credentials
+.env
+*.key
+api_keys.txt
+
+# OS
+.DS_Store
+Thumbs.db

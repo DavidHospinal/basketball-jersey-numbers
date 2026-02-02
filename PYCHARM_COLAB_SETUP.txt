@@ -1,0 +1,134 @@
+================================================================================
+CONFIGURACION PYCHARM PROFESSIONAL + GOOGLE COLAB GPU
+================================================================================
+
+OBJETIVO:
+Ejecutar basketball_jersey_analyzer.py desde PyCharm usando la GPU T4 de Colab
+de forma remota, manteniendo sincronizacion de archivos local.
+
+================================================================================
+PASO 1: PREPARAR NOTEBOOK DE COLAB
+================================================================================
+
+1. Ir a Google Colab: https://colab.research.google.com
+2. Crear nuevo notebook o usar uno existente
+3. Configurar runtime con GPU:
+   - Runtime > Change runtime type
+   - Hardware accelerator: GPU (T4)
+   - Save
+
+4. En una celda, ejecutar:
+
+   ```python
+   # Instalar extensión para conexión remota
+   !pip install colab-xterm
+   %load_ext colabxterm
+   %xterm
+   ```
+
+5. Anotar la URL de conexión SSH que aparece
+
+================================================================================
+PASO 2: CONFIGURAR PYCHARM PROFESSIONAL
+================================================================================
+
+1. Abrir PyCharm Professional
+2. Ir a: File > Settings > Project > Python Interpreter
+3. Hacer clic en el ícono de engranaje > Add Interpreter
+4. Seleccionar "On SSH"
+5. Ingresar datos de conexión del paso anterior
+6. Configurar el interprete remoto de Python (usar /usr/bin/python3)
+
+================================================================================
+PASO 3: SINCRONIZACION DE ARCHIVOS
+================================================================================
+
+PyCharm sincronizará automáticamente:
+- basketball_jersey_analyzer.py → Colab runtime
+- requirements.txt → Colab runtime
+
+Los resultados se guardarán en:
+- ./outputs/detections/ (PyCharm descargará automáticamente)
+- jersey_log.csv (sincronizado bidireccionalmente)
+
+================================================================================
+PASO 4: EJECUTAR EL SCRIPT
+================================================================================
+
+1. En PyCharm, abrir basketball_jersey_analyzer.py
+2. Click derecho > Run 'basketball_jersey_analyzer'
+3. El script se ejecutará en la GPU de Colab
+4. La consola de PyCharm mostrará:
+   - Verificación de GPU T4
+   - Instalación de dependencias
+   - Solicitud de API key
+
+5. Ingresar tu Roboflow API key cuando se solicite
+
+6. Gradio generará una URL pública (ej: https://xxxxx.gradio.live)
+7. Abrir esa URL en tu navegador local
+
+================================================================================
+PASO 5: USO DE LA INTERFAZ GRADIO
+================================================================================
+
+La interfaz estará disponible en tu navegador local pero ejecutándose en Colab:
+
+1. Subir imagen de camiseta de baloncesto
+2. Ajustar slider de confianza mínima (0.1 - 0.9)
+3. Hacer clic en "Analizar"
+4. Ver resultados:
+   - Imagen con bounding boxes
+   - Estadísticas de detección
+   - Tabla de números detectados
+5. Exportar resultados a CSV si es necesario
+6. Usar "Limpiar" para nueva detección
+
+================================================================================
+VERIFICACION DE GPU EN COLAB
+================================================================================
+
+El script automáticamente verificará:
+- torch.cuda.is_available() == True
+- Nombre: Tesla T4
+- CUDA version: 11.x o superior
+- Memoria total: ~15 GB
+
+Si no detecta GPU, revisar que el runtime de Colab esté configurado correctamente.
+
+================================================================================
+FLUJO DE DATOS
+================================================================================
+
+[PyCharm Local] <--SSH--> [Colab GPU T4] <--Internet--> [Navegador Local]
+       |                         |                              |
+   Código Python          Inferencia YOLO              Interfaz Gradio
+   Archivos CSV           Librería Inference            Visualización
+
+================================================================================
+NOTAS IMPORTANTES
+================================================================================
+
+1. La API key de Roboflow SOLO se usa para descargar el modelo una vez
+2. Todas las inferencias son 100% locales en la GPU de Colab
+3. NO se envían imágenes a servidores de Roboflow (cero consumo de créditos)
+4. El modelo se cachea en Colab, segunda ejecución es instantánea
+5. La sesión de Colab expira tras 12 horas de inactividad (runtime se desconecta)
+
+================================================================================
+TROUBLESHOOTING
+================================================================================
+
+Problema: "GPU no disponible"
+Solución: Verificar runtime de Colab (Runtime > Change runtime type > GPU)
+
+Problema: "Módulo 'inference' no encontrado"
+Solución: El script instala automáticamente, esperar a que termine
+
+Problema: "No se puede conectar al runtime remoto"
+Solución: Reiniciar kernel en Colab y regenerar túnel SSH
+
+Problema: "Gradio no genera URL pública"
+Solución: Verificar que share=True esté habilitado en demo.launch()
+
+================================================================================
