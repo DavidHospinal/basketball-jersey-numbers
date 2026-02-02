@@ -1,0 +1,97 @@
+================================================================================
+INICIO RAPIDO - Basketball Jersey Numbers OCR
+================================================================================
+
+ARCHIVO PRINCIPAL: test-colab.ipynb
+PLATAFORMA: Google Colab (100% gratuito con GPU T4)
+
+================================================================================
+PASOS PARA EMPEZAR (5 MINUTOS)
+================================================================================
+
+1. SUBIR NOTEBOOK A COLAB
+
+   Ir a: https://colab.research.google.com
+   File > Upload notebook
+   Seleccionar: test-colab.ipynb
+
+2. ACTIVAR GPU
+
+   Runtime > Change runtime type
+   Hardware accelerator: GPU
+   Save
+
+3. OBTENER API KEY
+
+   Ir a: https://app.roboflow.com
+   Settings > API Keys
+   Copiar "Private API Key"
+
+4. EJECUTAR NOTEBOOK
+
+   Ejecutar celdas en orden (Shift+Enter):
+
+   Celda 1: Instalar dependencias (2-3 min)
+   Celda 2: Verificar GPU Tesla T4
+   Celda 3: Importar modulos
+   Celda 4: Definir clase JerseyAnalyzer
+   Celda 5: Definir interfaz Gradio
+   Celda 6: PEGAR API KEY y ejecutar
+
+5. USAR INTERFAZ
+
+   Se generara URL publica: https://xxxxx.gradio.live
+   Abrir en navegador
+   Subir imagen de camiseta
+   Click "Analizar"
+   Ver resultados
+
+================================================================================
+ESTRUCTURA DEL PROYECTO
+================================================================================
+
+test-colab.ipynb               [PRINCIPAL] Notebook ejecutable en Colab
+COLAB_NOTEBOOK_GUIDE.txt       [GUIA] Instrucciones detalladas paso a paso
+basketball_jersey_analyzer.py  [ALTERNATIVO] Script Python para ejecucion local
+verify_environment.py          [UTIL] Script para verificar configuracion
+install_dependencies_colab.py  [UTIL] Instalador de dependencias
+README.md                      [DOC] Documentacion del proyecto
+requirements.txt               [CONFIG] Dependencias Python
+.gitignore                     [CONFIG] Archivos ignorados por git
+
+================================================================================
+RECOMENDACIONES
+================================================================================
+
+Para Usuarios Nuevos:
+- Usa test-colab.ipynb (mas facil, no requiere instalacion local)
+- Lee COLAB_NOTEBOOK_GUIDE.txt para detalles
+
+Para Desarrollo Avanzado:
+- Usa basketball_jersey_analyzer.py si tienes GPU NVIDIA local
+- Requiere configuracion de entorno Python
+
+Para Soporte Tecnico:
+- Revisar COLAB_NOTEBOOK_GUIDE.txt seccion Troubleshooting
+- Verificar que runtime de Colab tenga GPU activada
+
+================================================================================
+ENLACES UTILES
+================================================================================
+
+Google Colab: https://colab.research.google.com
+Roboflow (API Key): https://app.roboflow.com
+Modelo en Roboflow: https://universe.roboflow.com/roboflow-jvuqo/basketball-jersey-numbers-ocr/dataset/7
+Documentacion Inference: https://inference.roboflow.com/start/getting-started/
+
+================================================================================
+AUTOR Y LICENCIA
+================================================================================
+
+Autor: DavidHospinal
+Email: u202021214@upc.edu.pe
+Institucion: Universidad Peruana de Ciencias Aplicadas (UPC)
+Proyecto: Basketball Jersey Numbers OCR
+Licencia: Proyecto academico - UPC 2026
+
+================================================================================
