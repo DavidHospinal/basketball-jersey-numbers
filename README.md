@@ -7,59 +7,50 @@ Deteccion de numeros en camisetas de baloncesto usando YOLOv8 con inferencia loc
 - **Modelo**: basketball-jersey-numbers-ocr/7 (Roboflow)
 - **Arquitectura**: YOLOv8 (deteccion de objetos)
 - **GPU**: NVIDIA T4 (Google Colab)
-- **IDE**: PyCharm Professional + Colab Remote Runtime
+- **Plataforma**: Google Colab (Jupyter Notebook)
 - **Costo**: Cero creditos de API (inferencia 100% local)
 
-## Instalacion
+## Instalacion y Uso
 
-### 1. Clonar repositorio
+### Metodo Recomendado: Google Colab Notebook
+
+**Archivo principal**: `test-colab.ipynb`
+
+1. Subir `test-colab.ipynb` a Google Colab
+2. Configurar runtime con GPU T4
+3. Ejecutar celdas en orden (1 a 6)
+4. Ingresar API key de Roboflow en Celda 6
+5. Usar interfaz Gradio generada
+
+Ver `COLAB_NOTEBOOK_GUIDE.txt` para instrucciones detalladas.
+
+### Metodo Alternativo: Script Python Local
+
+**Archivo**: `basketball_jersey_analyzer.py`
 
 ```bash
-git clone <repository-url>
-cd basketball-jersey-numbers
-```
-
-### 2. Instalar dependencias
-
-```bash
+# Instalar dependencias
 pip install -r requirements.txt
-```
 
-### 3. Configurar PyCharm con Colab
-
-1. Abrir PyCharm Professional
-2. Configurar Python Interpreter:
-   - Settings > Project > Python Interpreter
-   - Add Interpreter > On SSH
-   - Conectar al runtime de Colab siguiendo la extension oficial
-
-### 4. Obtener API Key de Roboflow
-
-1. Registrarse en [Roboflow](https://roboflow.com)
-2. Ir a Settings > API Keys
-3. Copiar tu API key privada
-
-## Uso
-
-### Ejecucion del Script
-
-```bash
+# Ejecutar script
 python basketball_jersey_analyzer.py
 ```
 
-El script solicitara tu API key al inicio.
+Nota: Requiere GPU NVIDIA con CUDA. Para desarrollo sin GPU, usar Colab.
 
-### Flujo de Trabajo
+### Obtener API Key de Roboflow
 
-1. Script verifica disponibilidad de GPU T4
-2. Instala dependencias faltantes
-3. Carga modelo localmente en GPU
-4. Abre interfaz Gradio con URL publica
-5. Subir imagen o usar camara web
-6. Ajustar umbral de confianza (slider 0.1-0.9)
-7. Hacer clic en "Analizar"
-8. Ver resultados con bounding boxes y estadisticas
-9. Exportar detecciones a CSV
+1. Registrarse en [Roboflow](https://app.roboflow.com)
+2. Settings > API Keys
+3. Copiar Private API Key
+
+## Flujo de Trabajo
+
+1. Subir imagen de camiseta de baloncesto
+2. Ajustar umbral de confianza (slider 0.1-0.9)
+3. Click en "Analizar"
+4. Ver resultados con bounding boxes y estadisticas
+5. Exportar detecciones a CSV si es necesario
 
 ## Estructura del Proyecto
 

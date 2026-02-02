@@ -1,0 +1,261 @@
+================================================================================
+GUIA DE USO: test-colab.ipynb
+================================================================================
+
+ARCHIVO: test-colab.ipynb
+PROPOSITO: Notebook completo para ejecutar Basketball Jersey OCR en Google Colab
+HARDWARE: GPU NVIDIA Tesla T4 (gratuita)
+COSTO API: Cero (inferencia 100% local)
+
+================================================================================
+PASOS DE CONFIGURACION INICIAL
+================================================================================
+
+1. SUBIR NOTEBOOK A GOOGLE COLAB
+
+   Opcion A - Desde Google Drive:
+   - Subir test-colab.ipynb a tu Google Drive
+   - Click derecho > Abrir con > Google Colaboratory
+
+   Opcion B - Desde Colab directamente:
+   - Ir a https://colab.research.google.com
+   - File > Upload notebook
+   - Seleccionar test-colab.ipynb
+
+2. CONFIGURAR GPU EN EL RUNTIME
+
+   - Runtime > Change runtime type
+   - Hardware accelerator: GPU
+   - GPU type: T4 (automatico en plan gratuito)
+   - Save
+
+   VERIFICAR:
+   - En la esquina superior derecha debe aparecer "Tesla T4" cuando conectes
+
+3. OBTENER API KEY DE ROBOFLOW
+
+   - Ir a https://app.roboflow.com
+   - Crear cuenta o iniciar sesion
+   - Settings > API Keys
+   - Copiar tu "Private API Key"
+   - GUARDARLA (la necesitaras en el paso 5)
+
+================================================================================
+PASOS DE EJECUCION
+================================================================================
+
+EJECUTAR LAS CELDAS EN ORDEN (Shift+Enter en cada celda):
+
+CELDA 1: Instalacion de Dependencias
+   - Instala inference, supervision, gradio, roboflow
+   - Tarda aproximadamente 2-3 minutos
+   - Warnings de pandas/cryptography son normales
+   - Esperar a que termine antes de continuar
+
+CELDA 2: Verificacion de GPU
+   - Confirma que estas usando Tesla T4
+   - Muestra memoria GPU disponible (~15 GB)
+   - DEBE mostrar "GPU disponible: Tesla T4"
+   - Si no, revisar configuracion del runtime
+
+CELDA 3: Importaciones
+   - Importa modulos necesarios
+   - Debe mostrar "[OK] Modulos importados correctamente"
+   - Ejecucion instantanea
+
+CELDA 4: Clase JerseyAnalyzer
+   - Define la logica principal del analizador
+   - Debe mostrar "[OK] Clase JerseyAnalyzer definida"
+   - Ejecucion instantanea
+
+CELDA 5: Interfaz Gradio
+   - Define la interfaz web
+   - Debe mostrar "[OK] Funcion de interfaz Gradio definida"
+   - Ejecucion instantanea
+
+CELDA 6: Ejecucion Principal
+   - ANTES DE EJECUTAR: Pegar tu API key en la variable ROBOFLOW_API_KEY
+   - Formato: ROBOFLOW_API_KEY = "tu_api_key_aqui"
+   - Al ejecutar:
+     1. Carga el modelo (30-60 segundos primera vez)
+     2. Lanza interfaz Gradio
+     3. Genera dos URLs:
+        - URL local (solo funciona en Colab)
+        - URL publica (https://xxxxx.gradio.live)
+
+   USAR LA URL PUBLICA para acceder desde cualquier navegador
+
+================================================================================
+USO DE LA INTERFAZ GRADIO
+================================================================================
+
+1. SUBIR IMAGEN
+   - Click en "Image de entrada"
+   - Subir foto de camiseta de baloncesto
+   - O usar webcam para tomar foto en vivo
+
+2. AJUSTAR CONFIANZA
+   - Mover slider "Confianza minima" (0.1 a 0.9)
+   - Recomendado: 0.4 (valor por defecto)
+   - Valores mas altos = menos detecciones pero mas precisas
+
+3. ANALIZAR
+   - Click en boton "Analizar"
+   - Esperar 1-3 segundos
+   - Ver resultados:
+     * Imagen con bounding boxes verdes
+     * Numeros detectados con porcentaje de confianza
+     * Estadisticas (total, promedio, max, min)
+     * Tabla con todos los numeros encontrados
+
+4. EXPORTAR RESULTADOS
+   - Click en "Exportar a CSV"
+   - Archivo guardado en /content/outputs/detections/
+   - Formato: detecciones_YYYYMMDD_HHMMSS.csv
+
+5. LIMPIAR
+   - Click en "Limpiar" para nueva deteccion
+   - Borra imagen y resultados
+
+================================================================================
+ARCHIVOS GENERADOS
+================================================================================
+
+/content/jersey_log.csv
+   - Historial completo de todas las detecciones
+   - Formato: Timestamp, Numero Detectado, Confianza, Archivo
+   - Se actualiza automaticamente con cada deteccion
+   - Persiste durante la sesion de Colab
+
+/content/outputs/detections/detecciones_YYYYMMDD_HHMMSS.csv
+   - Exportaciones individuales
+   - Se crean al hacer click en "Exportar a CSV"
+   - Formato: numero, confianza, bbox
+
+DESCARGAR ARCHIVOS:
+   - Click en icono de carpeta (panel izquierdo)
+   - Navegar a /content/
+   - Click derecho en archivo > Download
+
+================================================================================
+FUNCIONAMIENTO INTERNO
+================================================================================
+
+INFERENCIA LOCAL (Costo Cero):
+   - La API key SOLO se usa para descargar el modelo (primera vez)
+   - Todas las predicciones se ejecutan en la GPU T4 de Colab
+   - NO se envian imagenes a servidores de Roboflow
+   - Consumo de creditos API: CERO
+
+CACHE DEL MODELO:
+   - Primera ejecucion: descarga modelo (~30-60 segundos)
+   - Siguientes ejecuciones: carga instantanea desde cache
+   - Cache persiste durante la sesion de Colab
+   - Al reiniciar runtime, se vuelve a descargar
+
+MODELO YOLO:
+   - Arquitectura: YOLOv8
+   - Clases: Numeros 0-99
+   - Modelo: basketball-jersey-numbers-ocr/7
+   - Formato salida: Bounding boxes con clase y confianza
+
+================================================================================
+TROUBLESHOOTING
+================================================================================
+
+PROBLEMA: GPU no detectada en Celda 2
+SOLUCION:
+   - Runtime > Change runtime type > GPU > Save
+   - Runtime > Restart runtime
+   - Volver a ejecutar celdas desde la 1
+
+PROBLEMA: Error "API key required" en Celda 6
+SOLUCION:
+   - Verificar que pegaste la API key correctamente
+   - Formato: ROBOFLOW_API_KEY = "xxxxx"
+   - Las comillas son obligatorias
+   - No debe tener espacios extra
+
+PROBLEMA: Timeout al cargar modelo
+SOLUCION:
+   - Verificar conexion a internet
+   - Runtime > Restart runtime
+   - Volver a ejecutar desde Celda 1
+   - Si persiste, puede ser problema temporal de Roboflow
+
+PROBLEMA: "No hay detecciones" en imagenes validas
+SOLUCION:
+   - Bajar el slider de confianza a 0.2 o 0.3
+   - Verificar que la imagen tenga numeros visibles
+   - Probar con otra imagen de mejor calidad
+
+PROBLEMA: URL publica de Gradio expiro
+SOLUCION:
+   - Las URLs publicas duran 72 horas
+   - Detener celda 6 (boton stop)
+   - Volver a ejecutar celda 6
+   - Se genera nueva URL
+
+PROBLEMA: Sesion de Colab desconectada
+SOLUCION:
+   - Las sesiones gratuitas duran max 12 horas
+   - Runtime > Reconnect
+   - Volver a ejecutar todas las celdas desde la 1
+
+================================================================================
+MEJORES PRACTICAS
+================================================================================
+
+1. CALIDAD DE IMAGEN
+   - Usar imagenes con buena iluminacion
+   - Numeros claramente visibles
+   - Resolucion minima recomendada: 640x640
+   - Formato: JPG, PNG
+
+2. AJUSTE DE CONFIANZA
+   - Empezar con 0.4
+   - Si hay muchos falsos positivos, subir a 0.6-0.7
+   - Si no detecta numeros obvios, bajar a 0.2-0.3
+
+3. PERSISTENCIA DE DATOS
+   - Descargar jersey_log.csv periodicamente
+   - Los archivos en /content/ se borran al cerrar sesion
+   - Usar Google Drive para guardar permanentemente
+
+4. OPTIMIZACION
+   - Ejecutar celdas 1-5 solo UNA vez por sesion
+   - Ejecutar celda 6 solo cuando cambies API key
+   - Para multiples imagenes, usar la interfaz Gradio sin reiniciar
+
+================================================================================
+INTEGRACION CON GOOGLE DRIVE (OPCIONAL)
+================================================================================
+
+Para guardar resultados permanentemente:
+
+# Agregar celda nueva ANTES de Celda 1:
+from google.colab import drive
+drive.mount('/content/drive')
+
+# Modificar rutas en Celda 4:
+self.output_dir = Path("/content/drive/MyDrive/basketball-ocr/outputs")
+self.csv_log = Path("/content/drive/MyDrive/basketball-ocr/jersey_log.csv")
+
+Ventajas:
+- Resultados persisten entre sesiones
+- Acceso desde cualquier dispositivo
+- Backup automatico
+
+================================================================================
+LIMITACIONES DEL PLAN GRATUITO DE COLAB
+================================================================================
+
+- GPU T4: 12-15 horas continuas max
+- Memoria RAM: 12 GB
+- Disco: 100+ GB
+- Sesion inactiva: desconecta tras 90 minutos
+- Restriccion de uso: no mineria, no entrenamiento pesado
+
+Para este proyecto de inferencia, el plan gratuito es SUFICIENTE.
+
+================================================================================

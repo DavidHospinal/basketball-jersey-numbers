@@ -1,0 +1,142 @@
+================================================================================
+SOLUCION: CAMBIAR INTERPRETE LOCAL A REMOTO EN PYCHARM
+================================================================================
+
+PROBLEMA DETECTADO:
+PyCharm esta usando el interprete local de Anaconda:
+C:\ProgramData\Anaconda3\python.exe
+
+DEBE usar el interprete remoto de Colab con GPU T4.
+
+================================================================================
+PASO 1: VERIFICAR MANAGED REMOTE RUNTIME
+================================================================================
+
+1. En PyCharm, abrir: File > Settings (Ctrl+Alt+S)
+2. Ir a: Project: basketball-jersey-numbers > Python Interpreter
+3. Verificar que aparezca el interprete remoto de Colab
+
+Si NO aparece:
+   - Tools > Manage Remote Runtime
+   - Conectar al notebook test-colab.ipynb
+   - Autenticar con david.hospinal10@gmail.com
+
+================================================================================
+PASO 2: CONFIGURAR INTERPRETE DEL PROYECTO
+================================================================================
+
+OPCION A - Desde el archivo abierto:
+1. Abrir basketball_jersey_analyzer.py
+2. En la esquina inferior derecha ver el interprete actual
+3. Hacer clic en "Python 3.X (Anaconda3)"
+4. Seleccionar: "Add Interpreter" > "On Colab"
+5. Elegir el runtime ya conectado a test-colab.ipynb
+
+OPCION B - Desde Settings:
+1. File > Settings > Project > Python Interpreter
+2. Click en el dropdown (o engranaje > Add)
+3. Seleccionar "On Colab" o "Managed Remote Runtime"
+4. Elegir la sesion de test-colab.ipynb
+5. Click OK y Apply
+
+================================================================================
+PASO 3: VERIFICAR LA CONFIGURACION
+================================================================================
+
+1. En la esquina inferior derecha debe mostrar:
+   "Python 3.X (Remote - Colab)"
+
+2. Abrir terminal de PyCharm y ejecutar:
+   python --version
+   python -c "import torch; print(torch.cuda.is_available())"
+
+   Debe mostrar:
+   Python 3.10.x
+   True
+
+3. Si muestra False o error, el runtime no esta conectado correctamente
+
+================================================================================
+PASO 4: EJECUTAR EL SCRIPT CON INTERPRETE REMOTO
+================================================================================
+
+Metodo 1 - Click derecho en archivo:
+1. Click derecho en basketball_jersey_analyzer.py
+2. Run 'basketball_jersey_analyzer'
+3. La consola debe mostrar:
+   "Conectando a runtime remoto de Colab..."
+   "VERIFICACION DE GPU"
+   "GPU disponible: Tesla T4"
+
+Metodo 2 - Desde terminal remota:
+1. Tools > Start SSH Session
+2. Seleccionar el runtime de Colab
+3. cd al directorio del proyecto
+4. python basketball_jersey_analyzer.py
+
+================================================================================
+PASO 5: VERIFICAR DEPENDENCIAS EN RUNTIME REMOTO
+================================================================================
+
+Si el script inicia pero falla al importar modulos, ejecutar en Colab:
+
+!pip install inference[gpu] supervision gradio roboflow torch
+
+Luego reiniciar el interprete en PyCharm:
+- Click derecho en consola > Restart Interpreter
+
+================================================================================
+TROUBLESHOOTING
+================================================================================
+
+Error: "Cannot connect to remote interpreter"
+Solucion:
+- Abrir test-colab.ipynb en el navegador
+- Ejecutar una celda para activar el runtime
+- Volver a PyCharm > Tools > Manage Remote Runtime > Reconnect
+
+Error: "ModuleNotFoundError" en modulos ya instalados
+Solucion:
+- File > Invalidate Caches > Invalidate and Restart
+- Esperar a que PyCharm reindexe el interprete remoto
+
+Error: "GPU no disponible" al verificar
+Solucion:
+- En Colab: Runtime > Change runtime type > GPU (T4)
+- Desconectar y reconectar el runtime
+- Verificar con: !nvidia-smi
+
+Error: El script se ejecuta localmente en vez de remotamente
+Solucion:
+- Verificar que la configuracion de Run/Debug use el interprete remoto:
+  Run > Edit Configurations > Python Interpreter
+  Debe estar seleccionado el interprete remoto de Colab
+
+================================================================================
+CONFIRMACION DE CONFIGURACION CORRECTA
+================================================================================
+
+Al ejecutar basketball_jersey_analyzer.py, la consola debe mostrar:
+
+============================================================
+VERIFICACION DE GPU
+============================================================
+GPU disponible: Tesla T4
+CUDA version: 12.2
+Memoria total: 14.75 GB
+Memoria asignada: 0.00 GB
+Memoria en cache: 0.00 GB
+============================================================
+
+Verificando dependencias...
+[OK] inference ya instalado
+[OK] supervision ya instalado
+[OK] gradio ya instalado
+[OK] roboflow ya instalado
+
+Ingresa tu Roboflow API key: _
+
+Si ves esto, la configuracion es correcta y el script esta corriendo
+en la GPU T4 de Colab a traves de PyCharm.
+
+================================================================================
