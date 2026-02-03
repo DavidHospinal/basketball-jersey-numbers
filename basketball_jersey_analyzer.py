@@ -7,11 +7,13 @@ Entorno: PyCharm + Google Colab GPU T4
 import os
 import sys
 import csv
+import re
 from datetime import datetime
 from pathlib import Path
 from typing import List, Dict, Tuple
 
 import torch
+import cv2
 import gradio as gr
 import numpy as np
 from PIL import Image
@@ -107,6 +109,7 @@ class JerseyAnalyzer:
     ) -> Tuple[np.ndarray, List[Dict]]:
         """
         Detecta numeros en camiseta con inferencia local
+        CORREGIDO: Maneja respuestas VLM y YOLO
 
         Args:
             imagen: Imagen en formato numpy array (RGB)
@@ -119,32 +122,125 @@ class JerseyAnalyzer:
             raise RuntimeError("Modelo no inicializado")
 
         # Inferencia local (NO consume creditos de API)
-        resultados = self.model.infer(imagen, confidence=confianza_min)[0]
+        resultado = self.model.infer(imagen, confidence=confianza_min)
 
-        # Procesar detecciones
+        # Manejar si resultado es lista
+        if isinstance(resultado, list):
+            resultado = resultado[0]
+
+        # Detectar tipo de respuesta
+        tipo_respuesta = type(resultado).__name__
+        print(f"[DEBUG] Tipo de respuesta: {tipo_respuesta}")
+
         detecciones = []
-        for pred in resultados.predictions:
-            detecciones.append({
-                'numero': pred.class_name,
-                'confianza': round(pred.confidence, 3),
-                'bbox': {
-                    'x': int(pred.x),
-                    'y': int(pred.y),
-                    'width': int(pred.width),
-                    'height': int(pred.height)
-                }
-            })
 
-        # Visualizar con supervision
-        imagen_anotada = self._visualizar_detecciones(imagen, resultados)
+        # CASO 1: Respuesta VLM (LMMInferenceResponse)
+        if hasattr(resultado, 'response'):
+            print("[INFO] Detectado modelo VLM")
+            texto_respuesta = str(getattr(resultado, 'response', ''))
+            print(f"[INFO] Respuesta del modelo: {texto_respuesta}")
+
+            # Extraer numero del texto usando regex
+            import re
+            numeros = re.findall(r'\b\d+\b', texto_respuesta)
+
+            if numeros:
+                numero_detectado = numeros[0]
+                print(f"[OK] Numero extraido: {numero_detectado}")
+
+                # Crear deteccion con bbox centrado
+                h, w = imagen.shape[:2]
+                detecciones.append({
+                    'numero': numero_detectado,
+                    'confianza': 0.95,  # VLM tiene alta confianza
+                    'bbox': {
+                        'x': w // 2,
+                        'y': h // 2,
+                        'width': int(w * 0.6),
+                        'height': int(h * 0.6)
+                    }
+                })
+            else:
+                print("[ADVERTENCIA] No se pudo extraer numero del texto")
+
+        # CASO 2: Respuesta YOLO estandar
+        elif hasattr(resultado, 'predictions'):
+            print("[INFO] Detectado modelo YOLO")
+            for pred in resultado.predictions:
+                detecciones.append({
+                    'numero': pred.class_name,
+                    'confianza': round(pred.confidence, 3),
+                    'bbox': {
+                        'x': int(pred.x),
+                        'y': int(pred.y),
+                        'width': int(pred.width),
+                        'height': int(pred.height)
+                    }
+                })
+
+        # CASO 3: Tipo desconocido - debug
+        else:
+            print(f"[ERROR] Tipo de respuesta desconocido: {tipo_respuesta}")
+            print(f"[DEBUG] Atributos: {dir(resultado)}")
+
+        # Visualizar detecciones
+        if detecciones:
+            imagen_anotada = self._visualizar_detecciones_opencv(imagen, detecciones)
+        else:
+            imagen_anotada = imagen.copy()
 
         # Guardar en log CSV
         self._guardar_en_log(detecciones)
 
         return imagen_anotada, detecciones
 
+    def _visualizar_detecciones_opencv(self, imagen: np.ndarray, detecciones: List[Dict]) -> np.ndarray:
+        """
+        Dibuja bounding boxes con OpenCV (compatible con VLM y YOLO)
+        """
+        import cv2
+
+        img = imagen.copy()
+
+        for det in detecciones:
+            bbox = det['bbox']
+            numero = det['numero']
+            conf = det['confianza']
+
+            # Calcular coordenadas del rectangulo
+            x1 = int(bbox['x'] - bbox['width'] / 2)
+            y1 = int(bbox['y'] - bbox['height'] / 2)
+            x2 = int(bbox['x'] + bbox['width'] / 2)
+            y2 = int(bbox['y'] + bbox['height'] / 2)
+
+            # Asegurar que coordenadas esten dentro de la imagen
+            h, w = img.shape[:2]
+            x1, x2 = max(0, x1), min(w, x2)
+            y1, y2 = max(0, y1), min(h, y2)
+
+            # Dibujar bounding box verde
+            cv2.rectangle(img, (x1, y1), (x2, y2), (0, 255, 0), 3)
+
+            # Preparar etiqueta
+            label = f"{numero} ({conf:.2f})"
+
+            # Calcular tamaño del texto
+            font = cv2.FONT_HERSHEY_SIMPLEX
+            font_scale = 1.2
+            thickness = 2
+            (text_w, text_h), _ = cv2.getTextSize(label, font, font_scale, thickness)
+
+            # Dibujar fondo para el texto
+            cv2.rectangle(img, (x1, y1 - text_h - 10), (x1 + text_w, y1), (0, 255, 0), -1)
+
+            # Dibujar texto
+            cv2.putText(img, label, (x1, y1 - 5),
+                       font, font_scale, (0, 0, 0), thickness)
+
+        return img
+
     def _visualizar_detecciones(self, imagen: np.ndarray, resultados) -> np.ndarray:
-        """Dibuja bounding boxes y etiquetas con supervision"""
+        """Dibuja bounding boxes y etiquetas con supervision (DEPRECATED - usar _visualizar_detecciones_opencv)"""
         try:
             import supervision as sv
             from inference import InferenceResponseObject
