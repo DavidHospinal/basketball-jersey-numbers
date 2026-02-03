@@ -1,0 +1,183 @@
+================================================================================
+COMO PROBAR LA APLICACION - Basketball Jersey Numbers OCR
+================================================================================
+
+ESTADO ACTUAL:
+Tu aplicacion Gradio esta corriendo en:
+https://c56481a511cbde635c.gradio.live
+
+IMAGENES DE PRUEBA DISPONIBLES:
+Carpeta: ./sample_images/
+- jersey_28.jpg (Numero 28)
+- jersey_05.jpg (Numero 05)
+- jersey_04.jpg (Numero 04)
+- jersey_02.jpg (Numero 02)
+- jersey_00.jpg (Numero 00)
+
+================================================================================
+PASOS PARA PROBAR
+================================================================================
+
+PASO 1: Abrir la interfaz Gradio
+
+   - Abrir navegador (Chrome, Firefox, Edge)
+   - Pegar la URL: https://c56481a511cbde635c.gradio.live
+   - Esperar a que cargue la interfaz
+
+PASO 2: Subir imagen de prueba
+
+   Opcion A - Arrastrar y soltar:
+   - Abrir carpeta sample_images en el explorador de archivos
+   - Arrastrar jersey_28.jpg al area "Imagen de entrada"
+
+   Opcion B - Upload:
+   - Click en el area "Imagen de entrada"
+   - Click en "Upload"
+   - Navegar a: D:\IA\2526\2026-01-BasketballJ-Jersey\basketball-jersey-numbers\sample_images\
+   - Seleccionar jersey_28.jpg
+   - Click "Open"
+
+PASO 3: Configurar confianza
+
+   - El slider "Confianza minima" debe estar en 0.4 (valor por defecto)
+   - Para estas imagenes de muestra, 0.4 es optimo
+   - Si quieres ser mas estricto, sube a 0.6-0.7
+
+PASO 4: Analizar
+
+   - Click en el boton verde "Analizar"
+   - Esperar 2-3 segundos (inferencia en GPU)
+
+PASO 5: Ver resultados
+
+   Deberias ver:
+   - Imagen procesada con bounding box verde
+   - Etiqueta "28 (0.XX)" donde XX es la confianza
+   - Estadisticas:
+     * Total de numeros detectados: 1
+     * Confianza promedio: ~0.85-0.95
+   - Tabla con el numero detectado
+
+PASO 6: Probar con otras imagenes
+
+   - Click en "Limpiar" para borrar resultados
+   - Subir otra imagen (jersey_05.jpg, jersey_04.jpg, etc.)
+   - Repetir pasos 3-5
+
+PASO 7: Exportar resultados (opcional)
+
+   - Si quieres guardar los resultados
+   - Click en "Exportar a CSV"
+   - El archivo se guardara en /content/outputs/detections/ (en Colab)
+
+================================================================================
+RESULTADOS ESPERADOS POR IMAGEN
+================================================================================
+
+jersey_28.jpg:
+   - Numero detectado: 28
+   - Confianza esperada: 0.90-0.95
+   - Bounding box: Cuadro verde alrededor del numero
+
+jersey_05.jpg:
+   - Numero detectado: 5
+   - Confianza esperada: 0.85-0.95
+
+jersey_04.jpg:
+   - Numero detectado: 4
+   - Confianza esperada: 0.85-0.95
+
+jersey_02.jpg:
+   - Numero detectado: 2
+   - Confianza esperada: 0.85-0.95
+
+jersey_00.jpg:
+   - Numero detectado: 0
+   - Confianza esperada: 0.80-0.90
+
+================================================================================
+TROUBLESHOOTING
+================================================================================
+
+PROBLEMA: No se detecta ningun numero
+
+Solucion:
+- Bajar el slider de confianza a 0.2 o 0.3
+- Verificar que la imagen se cargo correctamente
+- Probar con otra imagen
+
+PROBLEMA: URL de Gradio expiro
+
+Solucion:
+- La URL publica expira en 1 semana
+- Si expiro, volver a ejecutar la Celda 6 del notebook
+- Se generara nueva URL
+
+PROBLEMA: Error al subir imagen
+
+Solucion:
+- Verificar que la imagen sea JPG o PNG
+- Tamaño maximo: 10 MB
+- Probar con otra imagen
+
+PROBLEMA: Interfaz Gradio no carga
+
+Solucion:
+- Verificar que el notebook de Colab sigue ejecutandose
+- Verificar conexion a internet
+- Refrescar la pagina (F5)
+
+================================================================================
+DESCARGAR MAS IMAGENES DE PRUEBA
+================================================================================
+
+Si quieres mas imagenes para probar:
+
+1. Ejecutar script de descarga:
+   python download_sample_images.py
+
+2. Descargar manualmente desde Roboflow:
+   - Ir a: https://universe.roboflow.com/roboflow-jvuqo/basketball-jersey-numbers-ocr/dataset/7
+   - Click en "Download"
+   - Seleccionar formato: "PNG" o "JPG" (no OpenAI)
+   - Descargar y extraer
+
+3. Usar tus propias imagenes:
+   - Fotos de partidos de baloncesto
+   - Imagenes de internet
+   - Capturas de pantalla de videos
+
+   Requisitos:
+   - Formato: JPG, PNG
+   - Numero de camiseta visible
+   - Buena iluminacion
+   - Resolucion minima: 640x640
+
+================================================================================
+EJEMPLO DE USO COMPLETO
+================================================================================
+
+1. Abrir https://c56481a511cbde635c.gradio.live
+2. Arrastrar jersey_28.jpg al area de entrada
+3. Verificar que slider esta en 0.4
+4. Click "Analizar"
+5. Ver resultado:
+   - Imagen con bounding box verde
+   - Etiqueta "28 (0.92)"
+   - Estadisticas: Total: 1, Confianza promedio: 0.920
+   - Tabla: [28, 0.920]
+6. Click "Limpiar"
+7. Repetir con jersey_05.jpg
+8. Click "Exportar a CSV" si quieres guardar
+
+================================================================================
+NOTAS IMPORTANTES
+================================================================================
+
+- La inferencia se ejecuta en GPU T4 de Colab (gratis)
+- No consume creditos de API de Roboflow
+- Cada inferencia tarda 1-3 segundos
+- La sesion de Colab expira tras 12 horas de inactividad
+- Si la sesion expira, volver a ejecutar el notebook completo
+
+================================================================================
