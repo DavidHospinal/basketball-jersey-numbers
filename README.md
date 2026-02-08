@@ -145,4 +145,7 @@ for det in detections:
 
 ## License
 
-Academic project - Universidad Peruana de Ciencias Aplicadas (UPC) 2025
+Academic project - Pontificia Universidad Católica de Chile 2026
+
+![Banner Hospinal Systems](https://github.com/user-attachments/assets/36f307f5-ce77-4951-b094-6bac59c8828e)
+
