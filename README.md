@@ -1,115 +1,145 @@
 # Basketball Jersey Numbers OCR
 
-Deteccion de numeros en camisetas de baloncesto usando YOLOv8 con inferencia local en GPU.
+Automated detection and recognition of jersey numbers in basketball images using computer vision. This project leverages YOLOv8-based models trained via Roboflow for real-time OCR inference with local GPU acceleration.
 
-## Especificaciones Tecnicas
+## Technical Overview
 
-- **Modelo**: basketball-jersey-numbers-ocr/7 (Roboflow)
-- **Arquitectura**: YOLOv8 (deteccion de objetos)
-- **GPU**: NVIDIA T4 (Google Colab)
-- **Plataforma**: Google Colab (Jupyter Notebook)
-- **Costo**: Cero creditos de API (inferencia 100% local)
+| Component | Description |
+|-----------|-------------|
+| Model | basketball-jersey-numbers-ocr/7 (Roboflow) |
+| Architecture | YOLOv8 object detection with VLM support |
+| Inference | Local GPU (100% free, no API credit consumption) |
+| Interface | Gradio web application |
+| Platform | Google Colab with NVIDIA T4 GPU |
 
-## Instalacion y Uso
+## Requirements
 
-### Metodo Recomendado: Google Colab Notebook
+- Python 3.8+
+- NVIDIA GPU with CUDA support (or Google Colab T4)
+- Roboflow API key (free tier available)
 
-**Archivo principal**: `test-colab.ipynb`
+### Dependencies
 
-1. Subir `test-colab.ipynb` a Google Colab
-2. Configurar runtime con GPU T4
-3. Ejecutar celdas en orden (1 a 6)
-4. Ingresar API key de Roboflow en Celda 6
-5. Usar interfaz Gradio generada
+```
+inference
+supervision
+gradio
+roboflow
+pillow
+opencv-python
+torch
+```
 
-Ver `COLAB_NOTEBOOK_GUIDE.txt` para instrucciones detalladas.
+## Quick Start
 
-### Metodo Alternativo: Script Python Local
+### Option A: Google Colab (Recommended)
 
-**Archivo**: `basketball_jersey_analyzer.py`
+1. Open `test-colab.ipynb` in Google Colab
+2. Set runtime to GPU: Runtime > Change runtime type > GPU (T4)
+3. Execute cells sequentially (1-6)
+4. Enter your Roboflow API key in Cell 6
+5. Access the Gradio interface via the generated public URL
+
+### Option B: Local Execution
 
 ```bash
-# Instalar dependencias
 pip install -r requirements.txt
-
-# Ejecutar script
 python basketball_jersey_analyzer.py
 ```
 
-Nota: Requiere GPU NVIDIA con CUDA. Para desarrollo sin GPU, usar Colab.
+### Obtaining Roboflow API Key
 
-### Obtener API Key de Roboflow
+1. Create account at https://app.roboflow.com
+2. Navigate to Settings > API Keys
+3. Copy your Private API Key
 
-1. Registrarse en [Roboflow](https://app.roboflow.com)
-2. Settings > API Keys
-3. Copiar Private API Key
-
-## Flujo de Trabajo
-
-1. Subir imagen de camiseta de baloncesto
-2. Ajustar umbral de confianza (slider 0.1-0.9)
-3. Click en "Analizar"
-4. Ver resultados con bounding boxes y estadisticas
-5. Exportar detecciones a CSV si es necesario
-
-## Estructura del Proyecto
+## Project Structure
 
 ```
 basketball-jersey-numbers/
-├── basketball_jersey_analyzer.py   # Script principal
-├── requirements.txt                # Dependencias Python
-├── .gitignore                      # Archivos ignorados por git
-├── README.md                       # Documentacion
-├── outputs/                        # Imagenes procesadas (auto-creado)
-│   └── detections/
-└── jersey_log.csv                  # Historial de detecciones (auto-creado)
+    test-colab.ipynb              # Main notebook for Colab
+    basketball_jersey_analyzer.py # Python script version
+    requirements.txt              # Python dependencies
+    sample_images/                # Test images
+    .gitignore                    # Git exclusions
 ```
 
-## Funcionalidades
+## Features
 
-### Inferencia Local
-- Usa libreria `inference` con GPU T4
-- No consume creditos de Roboflow API
-- API key solo para descarga inicial del modelo
+### Inference Pipeline
 
-### Visualizacion
-- Bounding boxes con libreria `supervision`
-- Etiquetas con numero y confianza
-- Colores configurables
+- Downloads model weights on first run via Roboflow API
+- Executes inference locally on GPU (no per-request API costs)
+- Supports both YOLO detection and VLM response formats
+- Automatic bounding box visualization with confidence scores
 
-### Interfaz Gradio
-- Dashboard profesional con `gr.Blocks`
-- Entrada: imagen (upload o webcam)
-- Salida: imagen anotada + estadisticas + tabla
-- Controles: slider de confianza, botones de analisis y limpieza
+### Gradio Interface
 
-### Exportacion
-- Log CSV automatico con timestamp
-- Exportacion manual de detecciones actuales
-- Guardado local en carpeta `./outputs/`
+- Real-time image upload and webcam capture
+- Adjustable confidence threshold (0.1 - 0.9)
+- Detection statistics display
+- CSV export functionality
+- Automatic detection logging
 
-### Estadisticas
-- Total de numeros detectados
-- Confianza promedio/maxima/minima
-- Tabla de detecciones con clase y score
+### Detection Output
 
-## Configuracion de Git
+- Bounding boxes with jersey number labels
+- Confidence score for each detection
+- Aggregated statistics (total, average, max, min confidence)
+- Persistent CSV log of all detections
 
-Este proyecto esta configurado con:
+## Technical Details
 
-```bash
-git config user.name "DavidHospinal"
-git config user.email "u202021214@upc.edu.pe"
+### Model Architecture
+
+The system uses a fine-tuned YOLOv8 model trained on basketball jersey images. The model supports:
+
+- Single and multi-digit number detection
+- Partial occlusion handling
+- Variable jersey colors and lighting conditions
+
+### VLM Integration
+
+For models that return VLM (Visual Language Model) responses, the system:
+
+1. Parses text responses using regex
+2. Extracts numeric values from natural language output
+3. Generates synthetic bounding boxes centered on the image
+
+### Memory Management
+
+- Automatic GPU cache clearing before model loading
+- Graceful handling of CUDA memory allocation
+- Support for 16GB VRAM GPUs (T4)
+
+## Usage Example
+
+```python
+from jersey_analyzer import JerseyAnalyzer
+
+analyzer = JerseyAnalyzer(api_key="YOUR_API_KEY")
+image = cv2.imread("basketball_player.jpg")
+annotated_image, detections = analyzer.detectar_numeros(image)
+
+for det in detections:
+    print(f"Number: {det['numero']}, Confidence: {det['confianza']}")
 ```
 
-Todas las contribuciones se registran bajo el usuario DavidHospinal.
+## Configuration Files
 
-## Referencias
+| File | Purpose |
+|------|---------|
+| COLAB_NOTEBOOK_GUIDE.txt | Detailed Colab setup instructions |
+| INICIO_RAPIDO.txt | Quick start guide |
+| COMO_PROBAR.txt | Testing instructions |
+| requirements.txt | Python package dependencies |
 
-- [Roboflow Universe - Basketball Jersey Numbers](https://universe.roboflow.com/roboflow-jvuqo/basketball-jersey-numbers-ocr/dataset/7)
-- [Roboflow Inference Docs](https://inference.roboflow.com/start/getting-started/)
-- [Supervision Library](https://supervision.roboflow.com/)
+## References
 
-## Licencia
+- [Roboflow Universe - Basketball Jersey Numbers Dataset](https://universe.roboflow.com/roboflow-jvuqo/basketball-jersey-numbers-ocr/dataset/7)
+- [Roboflow Inference Documentation](https://inference.roboflow.com/)
+- [Supervision Library Documentation](https://supervision.roboflow.com/)
 
-Proyecto academico - UPC 2025
+## License
+
+Academic project - Universidad Peruana de Ciencias Aplicadas (UPC) 2025
