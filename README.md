@@ -2,6 +2,9 @@
 
 Automated detection and recognition of jersey numbers in basketball images using computer vision. This project leverages YOLOv8-based models trained via Roboflow for real-time OCR inference with local GPU acceleration.
 
+![baskgif](https://github.com/user-attachments/assets/4e4ccf56-d92b-4a2e-933b-de5ae8b02853)
+
+
 ## Technical Overview
 
 | Component | Description |
