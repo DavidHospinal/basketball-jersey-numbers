@@ -47,3 +47,14 @@ api_keys.txt
 # OS
 .DS_Store
 Thumbs.db
+
+# Documentation txt files (local only)
+CELDA_*.txt
+COLAB_*.txt
+COMO_*.txt
+EJECUTAR_*.txt
+INICIO_*.txt
+INSTRUCCIONES_*.txt
+PASOS_*.txt
+PYCHARM_*.txt
+SOLUCION_*.txt
